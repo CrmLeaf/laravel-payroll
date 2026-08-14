@@ -35,12 +35,5 @@ documents.
   ship a token in every visitor's JavaScript bundle.
 - English translation strings for every rendered label.
 
-### Notes
-
-`crmleaf/payroll-core` is not on Packagist yet, so this package declares it as a
-VCS repository. Composer ignores a `repositories` block inside an installed
-dependency, so your own root `composer.json` needs the same two entries — the
-README shows them.
-
 [Unreleased]: https://github.com/crmleaf/laravel-payroll/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/crmleaf/laravel-payroll/releases/tag/v1.0.0

@@ -21,8 +21,7 @@ find yourself computing in this package, the logic is in the wrong repository.
 
 ## Reproducing locally
 
-`crmleaf/payroll-core` is not on Packagist yet, so `composer.json` points at its
-git repository. That is all it takes:
+Everything resolves from Packagist. That is all it takes:
 
 ```bash
 git clone https://github.com/crmleaf/laravel-payroll.git

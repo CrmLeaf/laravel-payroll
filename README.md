@@ -9,22 +9,6 @@ composer require crmleaf/laravel-payroll
 php artisan vendor:publish --tag=payroll-config
 ```
 
-> [!NOTE]
-> Not on Packagist yet. Until it is, add both repositories to **your own
-> project's** `composer.json` and the same `require` works, because Composer
-> reads the git tags:
->
-> ```json
-> "repositories": [
->     { "type": "vcs", "url": "https://github.com/crmleaf/laravel-payroll.git" },
->     { "type": "vcs", "url": "https://github.com/crmleaf/payroll-core.git" }
-> ]
-> ```
->
-> Both entries are needed, and they have to be in the root project: Composer
-> ignores a `repositories` block inside an installed dependency, so listing only
-> this package will not resolve `crmleaf/payroll-core`.
-
 The provider is auto-discovered. Nothing else is required, and nothing
 observable changes until you ask for it - no route, no migration, no
 middleware.
