@@ -1,0 +1,80 @@
+{
+    "name": "crmleaf/laravel-payroll",
+    "description": "Laravel bridge for the CRMLeaf payroll engine: service provider, config, optional routes, Blade components, and payslip and GST invoice PDFs rendered inside your own application.",
+    "keywords": [
+        "laravel",
+        "payroll",
+        "india",
+        "epf",
+        "esi",
+        "tds",
+        "gst",
+        "invoice",
+        "payslip",
+        "blade"
+    ],
+    "homepage": "https://github.com/crmleaf/laravel-payroll",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "CRMLeaf",
+            "email": "opensource@crmleaf.app",
+            "homepage": "https://www.crmleaf.app"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/crmleaf/laravel-payroll/issues",
+        "source": "https://github.com/crmleaf/laravel-payroll",
+        "docs": "https://github.com/crmleaf/laravel-payroll#readme"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/crmleaf/payroll-core.git"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "crmleaf/payroll-core": "^1.0",
+        "illuminate/support": "^10.0 || ^11.0 || ^12.0"
+    },
+    "require-dev": {
+        "barryvdh/laravel-dompdf": "^2.0 || ^3.0",
+        "friendsofphp/php-cs-fixer": "^3.58",
+        "orchestra/testbench": "^8.0 || ^9.0 || ^10.0",
+        "phpstan/phpstan": "^1.11",
+        "phpunit/phpunit": "^10.5 || ^11.0"
+    },
+    "suggest": {
+        "barryvdh/laravel-dompdf": "Required only if you generate payslip or invoice PDFs (^2.0 || ^3.0). Without it the generators still render HTML."
+    },
+    "autoload": {
+        "psr-4": {
+            "Crmleaf\\Payroll\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Crmleaf\\Payroll\\Laravel\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Crmleaf\\Payroll\\Laravel\\PayrollServiceProvider"
+            ],
+            "aliases": {
+                "Payroll": "Crmleaf\\Payroll\\Laravel\\Facades\\Payroll"
+            }
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

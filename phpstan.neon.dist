@@ -1,0 +1,20 @@
+parameters:
+    level: 8
+    paths:
+        - src
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # barryvdh/laravel-dompdf is a suggested dependency, not a required one:
+        # the payslip and invoice documents render HTML without it and only need
+        # it for PDF output. So the binding resolves to a plain object here and
+        # its fluent methods cannot be seen statically. PdfRenderer guards the
+        # call at runtime; this silences the analysis that cannot see a class
+        # which may not be installed. Scoped to the one file so it cannot mask
+        # anything else.
+        -
+            message: '#Call to an undefined method object::(setOptions|setPaper|loadHTML|output)\(\)#'
+            path: src/Documents/PdfRenderer.php
+
+# Tests are outside `paths`, matching the rest of the suite. At level 8 a test
+# suite reports mostly redundant guards rather than defects; PHPUnit exercises
+# them, this analyses the code that ships.

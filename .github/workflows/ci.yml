@@ -1,0 +1,119 @@
+name: CI
+
+# This package is a bridge, so the matrix is PHP against the Laravel versions
+# composer.json claims to support. A bridge that only ever runs on the newest
+# framework is a bridge whose stated support is a guess.
+#
+# Testbench is pinned per Laravel version because its major tracks the
+# framework's: 8.x for Laravel 10, 9.x for 11, 10.x for 12.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }} · Laravel ${{ matrix.laravel }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+        laravel: ['10', '11', '12']
+        exclude:
+          # Laravel 10 supports PHP 8.1-8.3; 8.4 is not a combination anyone can
+          # install, so testing it would only ever fail on resolution.
+          - php: '8.4'
+            laravel: '10'
+        include:
+          - laravel: '10'
+            testbench: '^8.0'
+          - laravel: '11'
+            testbench: '^9.0'
+          - laravel: '12'
+            testbench: '^10.0'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, bcmath, dom
+          coverage: none
+          tools: composer:v2
+      - name: Pin the framework for this matrix leg
+        run: |
+          composer require --no-update --no-interaction \
+            "illuminate/support:^${{ matrix.laravel }}.0"
+          composer require --dev --no-update --no-interaction \
+            "orchestra/testbench:${{ matrix.testbench }}"
+      - uses: ramsey/composer-install@v4
+      - run: vendor/bin/phpunit
+
+  static-analysis:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+      - uses: ramsey/composer-install@v4
+      - run: vendor/bin/phpstan analyse --no-progress
+
+  code-style:
+    name: Code style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+      - uses: ramsey/composer-install@v4
+      - run: vendor/bin/php-cs-fixer fix --dry-run --diff
+
+  package:
+    name: Package metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+      - run: composer validate --strict --no-check-lock
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Scan the history for committed credentials
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/repo" -w /repo \
+            zricethezav/gitleaks:latest detect --source=/repo \
+            --config=/repo/.gitleaks.toml --redact --exit-code=1
