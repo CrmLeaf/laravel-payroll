@@ -35,12 +35,25 @@ jobs:
           - php: '8.4'
             laravel: '10'
         include:
+          # Composer blocks a package under an unpatched security advisory, and
+          # every 10.x and 11.x release of laravel/framework is under one. That
+          # is a fact about the framework, not about this package: an
+          # application already on Laravel 10 or 11 installs this fine under its
+          # own policy, and composer.json says it supports them.
+          #
+          # So those legs unblock, to test the compatibility that is claimed
+          # rather than quietly stop testing it. The runner is ephemeral, holds
+          # no secrets beyond a read-only token, and serves nothing. Laravel 12
+          # resolves normally and is left alone.
           - laravel: '10'
             testbench: '^8.0'
+            composer-flags: '--no-security-blocking'
           - laravel: '11'
             testbench: '^9.0'
+            composer-flags: '--no-security-blocking'
           - laravel: '12'
             testbench: '^10.0'
+            composer-flags: ''
     steps:
       - uses: actions/checkout@v7
         with:
@@ -53,11 +66,13 @@ jobs:
           tools: composer:v2
       - name: Pin the framework for this matrix leg
         run: |
-          composer require --no-update --no-interaction \
+          composer require --no-update --no-interaction ${{ matrix.composer-flags }} \
             "illuminate/support:^${{ matrix.laravel }}.0"
-          composer require --dev --no-update --no-interaction \
+          composer require --dev --no-update --no-interaction ${{ matrix.composer-flags }} \
             "orchestra/testbench:${{ matrix.testbench }}"
       - uses: ramsey/composer-install@v4
+        with:
+          composer-options: ${{ matrix.composer-flags }}
       - run: vendor/bin/phpunit
 
   static-analysis:
