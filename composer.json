@@ -28,12 +28,6 @@
         "source": "https://github.com/crmleaf/laravel-payroll",
         "docs": "https://github.com/crmleaf/laravel-payroll#readme"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/crmleaf/payroll-core.git"
-        }
-    ],
     "require": {
         "php": "^8.2",
         "crmleaf/payroll-core": "^1.0",
